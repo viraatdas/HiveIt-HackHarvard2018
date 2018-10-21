@@ -1,0 +1,60 @@
+import vision from '@google-cloud/vision';
+// Imports the Google Cloud client library
+export function processImage(imageUrl){
+  console.log("HI");
+  
+  const credentials = {
+  "type": "service_account",
+  "project_id": "predicting-decisions",
+  "private_key_id": "9181a7d477f0fa5c5e2849cd0c864e2394dd21c8",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDXKz+mpUSJYVS2\nchLiPyGW4osWuYYO9C0vvewVxW0rEVnfbjY9glMIvYk4YAN2WoX7FbPBV9cXLt86\nTSihEVz8Bk4KEW4WiTG4u1isIjrCEak5v3iY5RDRv/Wq7kgZZ7zOMtt9MWrkQyvr\naKHMANnZ6nru3ItLTGJzJge8LOXAoxpIyxE9mJKFDEy0Fs79i5ek0lSICXH6oWIv\nvEy9NtPjq0XD8h/7v91yVLXzD0kRSYwihYuWfU+eHGg/CIrnTC7mBYjaBoN18S73\nk9Zzhx5Rq1PkyfpZEuGKWZnbk/wJFSvJTr7HGcVCx85cx7AwUCpsyoBXMEFiyARD\n1QTJAdhjAgMBAAECggEAaaR5VueT0+OuxPkTHnQimMNXyOuDz3nBacxUyoepRtj5\nCENDbEW9YPA2HDC/4m8lkxafsBDhsSc5QJW7mgE9ZxvtWvId3AC2Id4R9knEEZ68\nOHcyzdbBwEoAY1EkoxyUzaSYsUn/El2MhcNUlSXh0CVZAEfWOD0jpSeJ6rEciMxl\nCoZDeBp3YqxfxeIcfBZgJSnCogRQQXA5wfGQ4OZ30JgLShr3t5xocU5hFZlTgg/S\ncd41ZDqKYZEj7fqIaJgzk7mYysR27RswqETem5mOrbC3JufOTfHOkieapo5XQXxU\nI6PSdjxlHVdZJTPZxdZ9z7rDHUD1UxgY5QhIm6LT2QKBgQD2+YsEct+DEDfLBIjP\nGXPey8IRhixwBN2KCFbFxLRHGNP93yqAeR6yqXXudyg0cFlBVcKwXBYUiwZnDH1a\nPi0jgOd1mmiDSt2atyjCTQ9iRDguIAGtboiDk8T3ns21Wt18mslC/jYfVCN01VX9\nG7fWEx1WBktN/TxAsXW55hNXpQKBgQDfCCk1VzXYo3I4/20C11EC5eOrhuVZ8Hp4\n/aw7ynU517kKgQiPsnXCQMzgCU8o+BP4hXx1rKLM5iuTzz3EaQ4Ebx/uyo8BjE5F\nuOpiL9ar1hS2Dbs0BhtssKdrXReCHwNQH68Ng6Iq5RVKBLoptPAidub1eN9klAWB\ns/whwzcxZwKBgE8w2MiGZPDLhHhObeeqC6NGxmWEFj+c78RQxDIJzpx1c5QVuLUV\nISi8eZoLDxMxaw0uCI0wGcxgf58PPCpxgVu++3iUGCrxGHmBfUpAF0y0/yabEK6h\noJhAC4oym1cpWZeYsiwPAx+shOnzde0AtEOqQV/SCNdq+aTswgjnoxAZAoGBAJSz\nTT5KIhWJjAtiiZzeUB39hlkDfIEFq7Jld2L57kSdhrrxIvMjyg20xKQOsN+g3zfQ\nUBXo/zZbs+w9vXHplTXxnTnJhaVDlaA41NSYDqnM90wWRZ0/ASPreARGMflIkh3m\nsgDxpbqxuAr8sd5Cy+Q+oGhDqbXWVwGOLemYzYC7AoGABcS6D1iFcWaCr0t/ZUa3\nIWICyFfWtJhs6VuSCx81Xwnl2zWz9LRiucZTw21HhR8rCGckI5OpcnjXurV1pvs7\nBtSNbqz3zCwYMLBw1WhmJPnwAdPh0nixeZ7KOe+UNJlfkUWZwHSQH3jvWmweoN+O\nr17Rj1ckGvgozOKB8Y04xzE=\n-----END PRIVATE KEY-----\n",
+  "client_email": "decision-predictor@predicting-decisions.iam.gserviceaccount.com",
+  "client_id": "103558262214192632194",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/decision-predictor%40predicting-decisions.iam.gserviceaccount.com"
+};
+
+
+// Creates a client
+const client = new vision.ImageAnnotatorClient({credentials});
+
+// Performs label detection on the image file
+
+const image = {
+  "requests":[
+    {
+      "image":{
+        "source":{
+          "imageUri":
+            imageUrl
+
+        }
+      },
+      "features":[
+        {
+          "type":"LABEL_DETECTION",
+          "maxResults":1
+        }
+      ]
+    }
+  ]
+}
+console.log(imageUrl);
+return client
+  .labelDetection({ image: { source: { imageUri: imageUrl}}})
+  //.labelDetection (image)
+  .then(results => {
+    const labels = results[0].imagePropertiesAnnotation;
+    console.log(results[0].imagePropertiesAnnotation);
+
+    console.log('Labels:');
+    labels.forEach(label => console.log(label.description));
+    //labels.map((label) => )
+  })
+  .catch(err => {
+    console.error('ERROR:', err);
+  });
+
+}
