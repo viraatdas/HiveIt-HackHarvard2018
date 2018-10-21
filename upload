@@ -1,0 +1,96 @@
+// For full API documentation, including code examples, visit http://wix.to/94BuAAs
+import {processImage} from 'backend/aModule.jsw';
+
+
+$w.onReady(function () {
+	//TODO: write your page related code here...
+
+});
+
+var imageUrl = ''
+const convertRegex = new RegExp(/image:\/\/v1\/([^\/]+)\/(.*)$/);
+// //const ret_imageUrl = "";
+// export function uploadButton1_change(event, $w) {
+//   if ($w("#uploadButton1").value.length > 0) {  // user chose a file
+//     console.log(`Uploading '${$w("#uploadButton1").value[0].name}'`);
+//     $w("#uploadButton1").startUpload()
+//       .then( (uploadedFile) => {
+//         console.log("Upload successful. File is available here:");
+//         console.log(uploadedFile.url);
+//         const matches = uploadedFile.url.match(convertRegex);
+//         //try using the 2 imageUrls with other filters
+//         const imageUrl = `https://static.wixstatic.com/media/${matches[1]}/v1/fill/w_200,h_200,al_c,lg_1/${matches[1]}`;
+//         //const imageUrl = `https://static.wixstatic.com/media/${matches[1]}`
+//         //currentImageName = $w("#uploadButton1").value[0].name
+//         //ret_imageUrl = imageUrl;
+// 		console.log(imageUrl);
+//         return imageUrl
+//       } )
+//      .then((url) => {
+//         $w('#uploadedImage').src = url
+//      })
+//       .catch( (uploadError) => {
+//         console.log(`File upload error: ${uploadError.errorCode}`);
+//         console.log(uploadError.errorDescription);
+//       } );
+//   }
+//   else {  // user clicked button but didn't chose a file
+//     console.log("Please choose a file to upload.")
+//   }
+// }
+
+
+export function dataset1_afterSave() {
+
+
+
+
+	//Add your code for this event here: 
+  const convertRegex = new RegExp(/image:\/\/v1\/([^\/]+)\/(.*)$/);
+  const upload_url = $w('#dataset1').getCurrentItem().decision1;
+  console.log($w('#dataset1').getCurrentItem().decision1);
+
+//   if ($w("#uploadButton1").value.length > 0) {  // user chose a file
+//     console.log(`Uploading '${$w("#uploadButton1").value[0].name}'`);
+//     $w("#uploadButton1").startUpload()
+//       .then( (upload_url) => {
+//         console.log("Upload successful. File is available here:");
+//         console.log(upload_url);
+        const matches = upload_url.match(convertRegex);
+        //try using the 2 imageUrls with other filters
+        imageUrl = `https://static.wixstatic.com/media/${matches[1]}/v1/fill/w_200,h_200,al_c,lg_1/${matches[1]}`;
+        //const imageUrl = `https://static.wixstatic.com/media/${matches[1]}`
+        //currentImageName = $w("#uploadButton1").value[0].name
+        //ret_imageUrl = imageUrl;
+	console.log(imageUrl);
+        //return imageUrl
+		
+        processImage(imageUrl).then((results) => {console.log(results)}
+);
+
+        // Imports the Google Cloud client library
+
+
+// Creates a client
+
+// processImage().then(function(label) {
+//     console.log(label);
+//       // Logs: 20
+// });
+      } 
+    //  .then((url) => {
+    //     $w('#uploadedImage').src = url
+    //  })
+//       .catch( (uploadError) => {
+//         console.log(`File upload error: ${uploadError.errorCode}`);
+//         console.log(uploadError.errorDescription);
+//       } );
+//   }
+//   else {  // user clicked button but didn't chose a file
+//     console.log("Please choose a file to upload.")
+//   }
+//}
+
+
+
+
