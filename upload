@@ -1,4 +1,5 @@
-// For full API documentation, including code examples, visit http://wix.to/94BuAAs
+import wixData from 'wix-data';
+import wixUsers from 'wix-users';
 import {processImage} from 'backend/aModule.jsw';
 
 
@@ -7,90 +8,140 @@ $w.onReady(function () {
 
 });
 
-var imageUrl = ''
-const convertRegex = new RegExp(/image:\/\/v1\/([^\/]+)\/(.*)$/);
-// //const ret_imageUrl = "";
-// export function uploadButton1_change(event, $w) {
-//   if ($w("#uploadButton1").value.length > 0) {  // user chose a file
-//     console.log(`Uploading '${$w("#uploadButton1").value[0].name}'`);
-//     $w("#uploadButton1").startUpload()
-//       .then( (uploadedFile) => {
-//         console.log("Upload successful. File is available here:");
-//         console.log(uploadedFile.url);
-//         const matches = uploadedFile.url.match(convertRegex);
-//         //try using the 2 imageUrls with other filters
-//         const imageUrl = `https://static.wixstatic.com/media/${matches[1]}/v1/fill/w_200,h_200,al_c,lg_1/${matches[1]}`;
-//         //const imageUrl = `https://static.wixstatic.com/media/${matches[1]}`
-//         //currentImageName = $w("#uploadButton1").value[0].name
-//         //ret_imageUrl = imageUrl;
-// 		console.log(imageUrl);
-//         return imageUrl
-//       } )
-//      .then((url) => {
-//         $w('#uploadedImage').src = url
-//      })
-//       .catch( (uploadError) => {
-//         console.log(`File upload error: ${uploadError.errorCode}`);
-//         console.log(uploadError.errorDescription);
-//       } );
-//   }
-//   else {  // user clicked button but didn't chose a file
-//     console.log("Please choose a file to upload.")
-//   }
-// }
+let imagesUploaded = 0;
+let image1;
+let image2;
+
+let fadeOptions = {
+  "duration":   2000,
+  "delay":      0
+};
 
 
-export function dataset1_afterSave() {
+export function uploadButton1_change(event) {
+	if ($w('#uploadButton1').value.length > 0) {
+		setTimeout(() => {
+			$w('#uploadButton1').startUpload().then(image => {
+				imagesUploaded++;
+				image1 = image;
+				$w('#image1').src = image.url;
+				if (imagesUploaded === 2) {
+					$w('#text1').hide('fade', fadeOptions);
+					$w('#uploadButton1').hide('fade', fadeOptions);
+					$w('#uploadButton2').hide('fade', fadeOptions);
+					
+					setTimeout(function() {
+						$w('#image1').show('fade', fadeOptions);
+						$w('#image2').show('fade', fadeOptions);
+						$w('#button1').show('fade', fadeOptions);
+						$w('#button2').show('fade', fadeOptions);
+						$w('#text2').show('fade', fadeOptions);
+					}, 2000);
+				}
+			});
+		}, 500)
+	}
+}
 
-
-
-
+export function uploadButton2_change(event) {
+	if ($w('#uploadButton2').value.length > 0) {
+		setTimeout(() => {
+			$w('#uploadButton2').startUpload().then(image => {
+				imagesUploaded++;
+				image2 = image;
+				$w('#image2').src = image.url;
+				if (imagesUploaded === 2) {
+					$w('#text1').hide('fade', fadeOptions);
+					$w('#uploadButton1').hide('fade', fadeOptions);
+					$w('#uploadButton2').hide('fade', fadeOptions);
+					
+					setTimeout(function() {
+						$w('#image1').show('fade', fadeOptions);
+						$w('#image2').show('fade', fadeOptions);
+						$w('#button1').show('fade', fadeOptions);
+						$w('#button2').show('fade', fadeOptions);
+						$w('#text2').show('fade', fadeOptions);
+					}, 1000);
+				}
+			});
+		}, 500)
+	}
+}
+export function button1_click(event) {
 	//Add your code for this event here: 
-  const convertRegex = new RegExp(/image:\/\/v1\/([^\/]+)\/(.*)$/);
+	let toInsert = {
+		"title":        "",
+		"decision1": image1.url,
+		"decision2": image2.url,
+		"voteFor1":   0,
+		"voteFor2":   0,
+		"creator":	wixUsers.currentUser.id
+	};
+	wixData.insert("decisions", toInsert)
+		.then( (results) => {
+				let item = results; //see item below
+			} )
+			.catch( (err) => {
+				let errorMsg = err;
+			} );
+
+		$w('#image1').hide('fade', fadeOptions);
+		$w('#image2').hide('fade', fadeOptions);
+		$w('#button1').hide('fade', fadeOptions);
+		$w('#button2').hide('fade', fadeOptions);
+		$w('#text2').hide('fade', fadeOptions);
+	
+	setTimeout(function() {
+		$w('#text4').show('fade', fadeOptions);
+		$w('#button3').show('fade', fadeOptions);
+		$w('#button4').show('fade', fadeOptions);
+		$w('#button5').show('fade', fadeOptions);
+	}, 1000);
+
+
+
+var imageUrl = '';
+var imageUrl2 = '';
+var first = '';
+var second = '';
+const convertRegex = new RegExp(/image:\/\/v1\/([^\/]+)\/(.*)$/);
+
   const upload_url = $w('#dataset1').getCurrentItem().decision1;
+  const upload_url2 = $w('#dataset1').getCurrentItem().decision2;
   console.log($w('#dataset1').getCurrentItem().decision1);
 
-//   if ($w("#uploadButton1").value.length > 0) {  // user chose a file
-//     console.log(`Uploading '${$w("#uploadButton1").value[0].name}'`);
-//     $w("#uploadButton1").startUpload()
-//       .then( (upload_url) => {
-//         console.log("Upload successful. File is available here:");
-//         console.log(upload_url);
+
         const matches = upload_url.match(convertRegex);
+        const matches2 = upload_url2.match(convertRegex);
         //try using the 2 imageUrls with other filters
         imageUrl = `https://static.wixstatic.com/media/${matches[1]}/v1/fill/w_200,h_200,al_c,lg_1/${matches[1]}`;
-        //const imageUrl = `https://static.wixstatic.com/media/${matches[1]}`
-        //currentImageName = $w("#uploadButton1").value[0].name
-        //ret_imageUrl = imageUrl;
+        imageUrl2 = `https://static.wixstatic.com/media/${matches[1]}/v1/fill/w_200,h_200,al_c,lg_1/${matches2[1]}`;
+        
 	console.log(imageUrl);
+        console.log(imageUrl2)
         //return imageUrl
 		
-        processImage(imageUrl).then((results) => {console.log(results)}
-);
-
-        // Imports the Google Cloud client library
-
-
-// Creates a client
-
-// processImage().then(function(label) {
-//     console.log(label);
-//       // Logs: 20
-// });
-      } 
-    //  .then((url) => {
-    //     $w('#uploadedImage').src = url
-    //  })
-//       .catch( (uploadError) => {
-//         console.log(`File upload error: ${uploadError.errorCode}`);
-//         console.log(uploadError.errorDescription);
-//       } );
-//   }
-//   else {  // user clicked button but didn't chose a file
-//     console.log("Please choose a file to upload.")
-//   }
-//}
+                
+        processImage(imageUrl).then((results) => {first = results} );
+        processImage(imageUrl2).then((results2) => {second = results2});
 
 
+}
 
-
+export function button2_click(event) {
+	//Add your code for this event here: 
+	$w('#uploadButton1').reset();
+	$w('#uploadButton2').reset();
+	imagesUploaded = 0;
+		$w('#image1').hide('fade', fadeOptions);
+		$w('#image2').hide('fade', fadeOptions);
+		$w('#button1').hide('fade', fadeOptions);
+		$w('#button2').hide('fade', fadeOptions);
+		$w('#text2').hide('fade', fadeOptions);
+	
+	setTimeout(function() {
+		$w('#text1').show('fade', fadeOptions);
+		$w('#uploadButton1').show('fade', fadeOptions);
+		$w('#uploadButton2').show('fade', fadeOptions);
+	}, 1000);
+}
